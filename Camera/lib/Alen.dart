@@ -38,6 +38,7 @@ class MyPickImageScreen extends StatefulWidget {
   _MyPickImageScreenState createState() => _MyPickImageScreenState();
 }
 
+// Opens that camera on the selected device
 class _MyPickImageScreenState extends State<MyPickImageScreen> {
   bool _load = false;
   late File imgFile;
@@ -73,27 +74,32 @@ class _MyPickImageScreenState extends State<MyPickImageScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // Camera Button
             ElevatedButton(
               child: const Text('Camera'),
               onPressed: () {
                 showCamera(context);
               },
             ),
+            // View Image Button will shown after image is taken
             Row(
               children: [
                 if (_load == true) ...[
                   const Padding(
                     padding: EdgeInsets.all(5),
                   ),
+                  // View Taken Image Button
                   ElevatedButton(
                     child: const Text('View Image'),
                     onPressed: () {
                       showCupertinoDialog(
                         context: context,
                         builder: (context) => CupertinoAlertDialog(
+                          // Pop-up with title and taken image
                           title: const Text('Taken Picture'),
                           content: Image.file(imgFile),
                           actions: <CupertinoDialogAction>[
+                            // Close button
                             CupertinoDialogAction(
                               child: const Text('Close'),
                               onPressed: () {
