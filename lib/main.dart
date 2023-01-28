@@ -1,6 +1,6 @@
-import 'package:basics/camera.dart';
 import 'package:flutter/material.dart';
 import 'sms.dart';
+import 'camera.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,7 +33,6 @@ class FirstPage extends StatefulWidget {
 }
 
 class _FirstPageState extends State<FirstPage> {
-  String buttonName = "Click";
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -55,11 +54,9 @@ class _FirstPageState extends State<FirstPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          buttonName = "clicked";
-                        });
+                        setState(() {});
                       },
-                      child: Text(buttonName),
+                      child: Text("Test"),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -71,7 +68,7 @@ class _FirstPageState extends State<FirstPage> {
                           return const Camera();
                         }));
                       },
-                      child: Text(buttonName),
+                      child: Text("Camera"),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -83,7 +80,7 @@ class _FirstPageState extends State<FirstPage> {
                           return sms();
                         }));
                       },
-                      child: Text(buttonName),
+                      child: Text("SMS"),
                     ),
                   ],
                 ),
@@ -111,34 +108,3 @@ class _FirstPageState extends State<FirstPage> {
     );
   }
 }
-
-// //Check page
-// class Check extends StatefulWidget {
-//   const Check({super.key});
-
-//   @override
-//   State<Check> createState() => _CheckState();
-// }
-
-// class _CheckState extends State<Check> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(),
-//     );
-//   }
-// }
-
-// class sms extends StatefulWidget {
-//   const sms({super.key});
-
-//   @override
-//   State<sms> createState() => _smsState();
-// }
-
-// class _smsState extends State<sms> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return sms();
-//   }
-// }
