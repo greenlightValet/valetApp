@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'data.dart';
+import 'package:data/data.dart';
 
 void main(List<String> args) {
   runApp(const RequestPage());
@@ -24,6 +24,16 @@ class Request extends StatefulWidget {
   @override
   State<Request> createState() => _RequestState();
 }
+
+var respondList = [
+  ["Bob", "location1", "id1", "make1", "model1", "color1"],
+  ["Haashim", "location2", "id2", "make2", "model2", "color2"]
+];
+
+var waitingList = [
+  ["Kate", "location1", "id1", "make1", "model1", "color1", "time1"],
+  ["Jim", "location2", "id2", "make2", "model2", "color2", "time2"]
+];
 
 class _RequestState extends State<Request> {
   Duration duration = const Duration(); //(minutes: widget.minutes);
@@ -96,7 +106,7 @@ class _RequestState extends State<Request> {
                           width: width,
                           color: const Color.fromARGB(255, 245, 113, 104),
                           child: const Text(
-                            'Respond for Requests',
+                            'New Requests',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -124,20 +134,20 @@ class _RequestState extends State<Request> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            respondList[index]["name"],
+                                            respondList[index][0],
                                             style:
                                                 const TextStyle(fontSize: 24),
                                           ),
                                           Text(
-                                            respondList[index]["location"] +
+                                            respondList[index][1] +
                                                 ', ' +
-                                                '${respondList[index]["id"]}' +
+                                                '${respondList[index][2]}' +
                                                 ', ' +
-                                                respondList[index]["make"] +
+                                                respondList[index][3] +
                                                 ', ' +
-                                                '${respondList[index]["model"]}' +
+                                                '${respondList[index][4]}' +
                                                 ', ' +
-                                                respondList[index]["color"],
+                                                respondList[index][5],
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
@@ -169,7 +179,10 @@ class _RequestState extends State<Request> {
                                                               time = 0;
                                                               Accept(
                                                                   index, time);
-                                                                  duration = Duration(minutes: time);
+                                                              duration =
+                                                                  Duration(
+                                                                      minutes:
+                                                                          time);
                                                               startTimer();
                                                             },
                                                             child: const Text(
@@ -179,7 +192,10 @@ class _RequestState extends State<Request> {
                                                               time = 5;
                                                               Accept(
                                                                   index, time);
-                                                                  duration = Duration(minutes: time);
+                                                              duration =
+                                                                  Duration(
+                                                                      minutes:
+                                                                          time);
                                                               startTimer();
                                                             },
                                                             child: const Text(
@@ -189,7 +205,10 @@ class _RequestState extends State<Request> {
                                                               time = 10;
                                                               Accept(
                                                                   index, time);
-                                                                  duration = Duration(minutes: time);
+                                                              duration =
+                                                                  Duration(
+                                                                      minutes:
+                                                                          time);
                                                               startTimer();
                                                             },
                                                             child: const Text(
@@ -199,7 +218,10 @@ class _RequestState extends State<Request> {
                                                               time = 15;
                                                               Accept(
                                                                   index, time);
-                                                                  duration = Duration(minutes: time);
+                                                              duration =
+                                                                  Duration(
+                                                                      minutes:
+                                                                          time);
                                                               startTimer();
                                                             },
                                                             child: const Text(
@@ -209,7 +231,10 @@ class _RequestState extends State<Request> {
                                                               time = 20;
                                                               Accept(
                                                                   index, time);
-                                                                  duration = Duration(minutes: time);
+                                                              duration =
+                                                                  Duration(
+                                                                      minutes:
+                                                                          time);
                                                               startTimer();
                                                             },
                                                             child: const Text(
@@ -263,7 +288,7 @@ class _RequestState extends State<Request> {
                             width: width,
                             color: const Color.fromARGB(255, 86, 170, 240),
                             child: const Text(
-                              'Waiting for Requests',
+                              'Currently Waiting',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -287,22 +312,22 @@ class _RequestState extends State<Request> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            waitingList[index]["name"],
+                                            waitingList[index][0],
                                             style:
                                                 const TextStyle(fontSize: 24),
                                           ),
                                           Text(
-                                            waitingList[index]["location"] +
+                                            waitingList[index][1] +
                                                 ', ' +
-                                                '${waitingList[index]["id"]}' +
+                                                '${waitingList[index][2]}' +
                                                 ', ' +
-                                                waitingList[index]["make"] +
+                                                waitingList[index][3] +
                                                 ', ' +
-                                                '${waitingList[index]["model"]}' +
+                                                '${waitingList[index][4]}' +
                                                 ', ' +
-                                                waitingList[index]["color"] +
+                                                waitingList[index][5] +
                                                 ', ' +
-                                                '${waitingList[index]["time"]}',
+                                                '${waitingList[index][6]}',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
@@ -342,13 +367,13 @@ void Accept(int index, int time) {
     "location": '',
     "time": 0,
   };
-  map["name"] = respondList[index]["name"];
-  map["id"] = respondList[index]["id"];
-  map["model"] = respondList[index]["model"];
-  map["make"] = respondList[index]["make"];
-  map["color"] = respondList[index]["color"];
-  map["location"] = respondList[index]["location"];
+  map["name"] = respondList[index][0];
+  map["id"] = respondList[index][1];
+  map["model"] = respondList[index][2];
+  map["make"] = respondList[index][3];
+  map["color"] = respondList[index][4];
+  map["location"] = respondList[index][5];
   map["time"] = time;
-  waitingList.add(map);
+  waitingList.add();
   respondList.removeAt(index);
 }

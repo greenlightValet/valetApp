@@ -4,6 +4,8 @@ import 'package:twilio_flutter/twilio_flutter.dart';
 void main() => runApp(sms());
 
 class sms extends StatelessWidget {
+  const sms({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
