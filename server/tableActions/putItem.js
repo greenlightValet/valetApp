@@ -10,11 +10,7 @@ const params = {
   Item: {
     receiptID: '009b0576-f9f7-41a4-a257-9dac699ce64a',
     phoneNum: '4251112225',
-    clientName: 'HaashimUpdated',
-    carMake: 'Honda',
-    carModel: 'Accord',
-    carColor: 'red',
-    licensePlate: 'zzzzzz',
+    clientName: 'HaroonNew',
     dateIssued: `${today}`,
   },
 };

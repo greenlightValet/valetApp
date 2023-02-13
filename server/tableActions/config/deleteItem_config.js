@@ -1,6 +1,6 @@
 // DELETE functionality
 import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient } from '../../libs/ddbDocClient';
+import { ddbDocClient } from '../../libs/ddbDocClient.js';
 
 export const deleteItem = async (params) => {
   try {

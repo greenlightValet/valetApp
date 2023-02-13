@@ -1,7 +1,7 @@
 // GET functionality
 
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient } from '../../libs/ddbDocClient';
+import { ddbDocClient } from '../../libs/ddbDocClient.js';
 
 export const getItem = async (params) => {
   try {

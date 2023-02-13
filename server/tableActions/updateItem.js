@@ -8,12 +8,17 @@ const params = {
     receiptID: '009b0576-f9f7-41a4-a257-9dac699ce64a',
   },
   ExpressionAttributeNames: {
-    '#f': 'likesFootball',
+    '#a': 'age',
+    '#cc': 'carColor',
+    '#cmk': 'carMake',
+    '#cmd': 'carModel',
+    '#cn': 'clientName',
+    '#di': 'dateIssued',
+    '#lp': 'licensePlate',
   },
-  UpdateExpression: 'set #a = :a, #f = :f',
+  UpdateExpression: 'set #a = :a',
   ExpressionAttributeValues: {
     ':a': 34,
-    ':f': true,
   },
 };
 updateItem(params);
