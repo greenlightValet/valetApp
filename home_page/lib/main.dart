@@ -1,6 +1,6 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
+import 'dart:math';
 
 void main() {
   runApp(const FormApp());
@@ -32,14 +32,49 @@ class FormPage extends StatefulWidget {
 class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: const ValetForm(),
-      ),
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            bottom: const TabBar(
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.add_circle),
+                  text: "Request",
+                ),
+                Tab(
+                  icon: Icon(Icons.find_in_page_sharp),
+                  text: "Logs",
+                ),
+                Tab(
+                  icon: Icon(Icons.home),
+                  text: "Home",
+                ),
+                Tab(
+                  icon: Icon(Icons.settings),
+                  text: "Settings",
+                ),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: const ValetForm(),
+              ),
+              const MaterialApp(
+                home: Center(child: Text("Add Logs")),
+              ),
+              const MaterialApp(
+                home: Center(child: Text("Add Home")),
+              ),
+              const MaterialApp(
+                home: Center(child: Text("Add Settings")),
+              ),
+            ],
+          )),
     );
   }
 }
@@ -55,14 +90,19 @@ class _ValetFormState extends State<ValetForm> {
   final _formKey = GlobalKey<FormState>();
   final _passKey = GlobalKey<FormFieldState>();
 
+  late TwilioFlutter twilioFlutter;
+
   String _name = '';
   String _number = '';
   String _brand = '';
   String _model = '';
   String _license = '';
+  String _randNum = '';
   int _selectedTime = 0;
   bool _nameCheck = false;
   bool _numCheck = false;
+  bool _hasBeenPressed1 = false; //for confirmation button
+  bool _hasBeenPressed2 = false; //for ticket button
 
   List<DropdownMenuItem<int>> TimeList = [];
   void loadTimeList() {
@@ -78,8 +118,40 @@ class _ValetFormState extends State<ValetForm> {
   }
 
   @override
+  void initState() {
+    twilioFlutter = TwilioFlutter(
+        accountSid: 'AC4142b9df47f01a20604e4ee1dc64757d',
+        authToken: '84366f0bd9f306066f16cafa96aa5205',
+        twilioNumber: '+13855264060');
+
+    super.initState();
+  }
+
+  void sendSms(String number, String message) async {
+    twilioFlutter.sendSMS(toNumber: '+1' + number, messageBody: message);
+  }
+
+  void getSms() async {
+    var data = await twilioFlutter.getSmsList();
+    print(data);
+
+    await twilioFlutter.getSMS('***************************');
+  }
+
+  void getRandNum() {
+    if (_randNum == '') {
+      var rndnumber = "";
+      var rnd = new Random();
+      for (var i = 0; i < 6; i++) {
+        rndnumber = rndnumber + rnd.nextInt(9).toString();
+      }
+      _randNum = rndnumber;
+    }
+  }
+
   Widget build(BuildContext context) {
     loadTimeList();
+    getRandNum();
     // Build a Form widget using the _formKey we created above
     return Form(
         key: _formKey,
@@ -90,6 +162,15 @@ class _ValetFormState extends State<ValetForm> {
 
   List<Widget> getFormWidget() {
     List<Widget> formWidget = [];
+    formWidget.add(Text(
+      'Ticket ID: $_randNum',
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        fontSize: 27,
+        fontWeight: FontWeight.w700,
+        height: 2,
+      ),
+    ));
 
     formWidget.add(TextFormField(
       decoration:
@@ -97,6 +178,13 @@ class _ValetFormState extends State<ValetForm> {
       validator: (value) {
         if (value!.isEmpty) {
           return 'Please enter a name';
+        }
+
+        Pattern pattern = r'^[a-zA-Z ]+$';
+        RegExp regex = RegExp(pattern.toString());
+
+        if (!regex.hasMatch(value.toString())) {
+          return 'Enter a valid name';
         } else {
           _nameCheck = true;
           return null;
@@ -137,6 +225,10 @@ class _ValetFormState extends State<ValetForm> {
 
     void onPressedSubmit() {
       if (_nameCheck == true && _numCheck == true) {
+        _hasBeenPressed1 = true;
+
+        sendSms(_number, "Yo, testing sms feature with confirm button.");
+
         final snackBar = SnackBar(
           content: Container(
             margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -155,14 +247,21 @@ class _ValetFormState extends State<ValetForm> {
       }
     }
 
-    final ButtonStyle style =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 17));
+    final ButtonStyle style1 = ElevatedButton.styleFrom(
+      textStyle: const TextStyle(fontSize: 17),
+      backgroundColor: _hasBeenPressed1 ? Colors.green : Colors.blue,
+    );
+
+    final ButtonStyle style2 = ElevatedButton.styleFrom(
+      textStyle: const TextStyle(fontSize: 17),
+      backgroundColor: _hasBeenPressed2 ? Colors.green : Colors.blue,
+    );
 
     formWidget.add(Container(
         margin: const EdgeInsets.all(20.0),
         child: ElevatedButton(
             onPressed: onPressedSubmit,
-            style: style,
+            style: style1,
             child: const Text('Send Confirmation'))));
 
     formWidget.add(DropdownButtonFormField(
@@ -186,6 +285,12 @@ class _ValetFormState extends State<ValetForm> {
       validator: (value) {
         if (value!.isEmpty) {
           return 'Enter the brand';
+        }
+        Pattern pattern = r'^[a-zA-Z]+$';
+        RegExp regex = RegExp(pattern.toString());
+
+        if (!regex.hasMatch(value.toString())) {
+          return 'Enter a valid brand';
         } else {
           return null;
         }
@@ -236,6 +341,7 @@ class _ValetFormState extends State<ValetForm> {
     void onPressedSubmit1() {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState?.save();
+        _hasBeenPressed2 = true;
         final snackBar = SnackBar(
           content: Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -252,37 +358,8 @@ class _ValetFormState extends State<ValetForm> {
         margin: const EdgeInsets.all(20.0),
         child: ElevatedButton(
             onPressed: onPressedSubmit1,
-            style: style,
+            style: style2,
             child: const Text('Create Ticket'))));
-
-    // This is for the menu bar but not working
-
-    // formWidget.add(
-    //   BottomNavigationBar(
-    //       items: const <BottomNavigationBarItem>[
-    //         BottomNavigationBarItem(
-    //             icon: Icon(Icons.home),
-    //             label: 'Home',
-    //             backgroundColor: Colors.blue),
-    //         BottomNavigationBarItem(
-    //             icon: Icon(Icons.search),
-    //             label: 'Search',
-    //             backgroundColor: Colors.blue),
-    //         BottomNavigationBarItem(
-    //           icon: Icon(Icons.person),
-    //           label: 'Profile',
-    //           backgroundColor: Colors.blue,
-    //         ),
-    //         BottomNavigationBarItem(
-    //             icon: Icon(Icons.folder),
-    //             label: 'Folder',
-    //             backgroundColor: Colors.blue),
-    //       ],
-    //       type: BottomNavigationBarType.shifting,
-    //       selectedItemColor: Colors.black,
-    //       iconSize: 40,
-    //       elevation: 5),
-    // );
 
     return formWidget;
   }
