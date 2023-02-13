@@ -1,7 +1,7 @@
 // UPDATE functionality
 
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient } from '../../libs/ddbDocClient';
+import { ddbDocClient } from '../../libs/ddbDocClient.js';
 
 export const updateItem = async (params) => {
   // Set the parameters.
