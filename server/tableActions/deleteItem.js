@@ -1,21 +1,10 @@
-import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient } from '../libs/ddbDocClient.js';
+// pass in value to DELETE
+import { deleteItem } from './config/deleteItem_config.js';
 
-// Set the parameters.
 export const params = {
-  TableName: 'Clients',
+  TableName: 'receipts',
   Key: {
-    Name: 'DEF',
-    Code: 2,
+    receiptID: '778ab2a2-c475-418a-aab1-93f3b85cca0e',
   },
 };
-
-export const deleteItem = async () => {
-  try {
-    await ddbDocClient.send(new DeleteCommand(params));
-    console.log('Success - item deleted');
-  } catch (err) {
-    console.log('Error', err);
-  }
-};
-deleteItem();
+deleteItem(params);

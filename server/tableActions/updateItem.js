@@ -1,21 +1,19 @@
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient } from '../libs/ddbDocClient.js';
+// pass in value to UPDATE
 
-export const updateItem = async () => {
-  // Set the parameters.
-  const params = {
-    TableName: 'receipts',
-    Key: {
-      receiptID: '1591234f-6a8f-403a-b305-12988df00ef8',
-      clientName: 'John Jack',
-    },
-  };
-  try {
-    const data = await ddbDocClient.send(new UpdateCommand(params));
-    console.log('Success - item added or updated', data);
-    return data;
-  } catch (err) {
-    console.log('Error', err);
-  }
+import { updateItem } from './config/updateItem_config.js';
+
+const params = {
+  TableName: 'receipts',
+  Key: {
+    receiptID: '009b0576-f9f7-41a4-a257-9dac699ce64a',
+  },
+  ExpressionAttributeNames: {
+    '#f': 'likesFootball',
+  },
+  UpdateExpression: 'set #a = :a, #f = :f',
+  ExpressionAttributeValues: {
+    ':a': 34,
+    ':f': true,
+  },
 };
-updateItem();
+updateItem(params);
