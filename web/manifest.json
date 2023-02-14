@@ -1,6 +1,6 @@
 {
-    "name": "basics",
-    "short_name": "basics",
+    "name": "home_page",
+    "short_name": "home_page",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
