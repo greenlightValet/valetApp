@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:data/data.dart';
+// import 'package:data/data.dart';
 
 void main(List<String> args) {
   runApp(const RequestPage());
@@ -71,9 +71,9 @@ class _RequestState extends State<Request> {
     final seconds = twoDigits(duration.inSeconds.remainder(60));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Request Page'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Request Page'),
+      // ),
       body: Align(
           alignment: Alignment.topCenter,
           child: Column(
@@ -374,6 +374,7 @@ void Accept(int index, int time) {
   map["color"] = respondList[index][4];
   map["location"] = respondList[index][5];
   map["time"] = time;
-  waitingList.add();
+
+  // waitingList.add();
   respondList.removeAt(index);
 }
