@@ -378,3 +378,50 @@ void Accept(int index, int time) {
   // waitingList.add();
   respondList.removeAt(index);
 }
+
+
+List<Map> respondList = [
+  {
+    "name":'Mimi',
+    "id":123495,
+    "model":"toyota",
+    "make":"111",
+    "color":"gray",
+    "location":"xavier",
+  },
+  {
+    "name":'Ryan',
+    "id":137425,
+    "model":"audi",
+    "make":"222",
+    "color":"white",
+    "location":"bel",
+  },
+  {
+    "name":'Haashim',
+    "id":337545,
+    "model":"bmw",
+    "make":"333",
+    "color":"black",
+    "location":"campion",
+  },
+  {
+    "name":'Jay',
+    "id":4252523,
+    "model":"honda",
+    "make":"444",
+    "color":"red",
+    "location":"murphy",
+  },
+  {
+    "name":'Alen',
+    "id":642754,
+    "model":"hyundai",
+    "make":"555",
+    "color":"blue",
+    "location":"home",
+  },
+];
+
+
+List<Map> waitingList = [];
