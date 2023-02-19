@@ -14,17 +14,16 @@ class _RequestState extends State<Request> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 30,
-                child: Text(
-                  "Waiting List",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                  ),
+            const SizedBox(
+              width: double.infinity,
+              //height: 30,
+              child: Text(
+                "Waiting List",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 27,
+                  fontWeight: FontWeight.w700,
+                  height: 2,
                 ),
               ),
             ),
