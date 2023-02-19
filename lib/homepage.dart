@@ -67,8 +67,10 @@ class _FormPageState extends State<FormPage> {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: const ValetForm(),
               ),
-              const MaterialApp(
-                home: Center(child: Request()),
+               MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData.dark(),
+                home: const Center(child: Request()),
               ),
               const MaterialApp(
                 home: Center(child: Text("Add Home")),
