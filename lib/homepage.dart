@@ -18,7 +18,7 @@ class Homepage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Ticket',
       theme: ThemeData.dark(),
-      home: const FormPage(title: 'Ticket Home Page'),
+      home: const FormPage(title: 'GreenLight Solutions'),
     );
   }
 }
@@ -44,11 +44,11 @@ class _FormPageState extends State<FormPage> {
               tabs: [
                 Tab(
                   icon: Icon(Icons.add_circle),
-                  text: "Request",
+                  text: "Ticket",
                 ),
                 Tab(
                   icon: Icon(Icons.find_in_page_sharp),
-                  text: "Logs",
+                  text: "Requests",
                 ),
                 Tab(
                   icon: Icon(Icons.home),
