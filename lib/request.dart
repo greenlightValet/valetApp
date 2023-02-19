@@ -4,7 +4,6 @@ class Request extends StatefulWidget {
   const Request({super.key});
 
   @override
-  
   State<Request> createState() => _RequestState();
 }
 
@@ -14,60 +13,79 @@ class _RequestState extends State<Request> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          children: List.generate(
-            respondList.length,
-            (index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Flex(
-                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  direction: Axis.horizontal,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            respondList[index]["name"],
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                          Text(
-                            respondList[index]["location"] +
-                                ', ' +
-                                '${respondList[index]["id"]}' +
-                                ', ' +
-                                respondList[index]["make"] +
-                                ' ' +
-                                '${respondList[index]["model"]}' +
-                                ', ' +
-                                respondList[index]["color"],
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: showTime(index),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          respondList.removeAt(index);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                        child: const Text("Accept"),
-                      ),
-                    ),
-                  ],
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 30,
+                child: Text(
+                  "Waiting List",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                  ),
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+            Column(
+              children: List.generate(
+                respondList.length,
+                (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                respondList[index]["name"],
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                              Text(
+                                respondList[index]["location"] +
+                                    ', ' +
+                                    '${respondList[index]["id"]}' +
+                                    ', ' +
+                                    respondList[index]["make"] +
+                                    ' ' +
+                                    '${respondList[index]["model"]}' +
+                                    ', ' +
+                                    respondList[index]["color"],
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: showTime(index),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                respondList.removeAt(index);
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: const Text("Accept"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
