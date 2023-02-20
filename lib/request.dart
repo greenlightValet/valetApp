@@ -75,7 +75,7 @@ class _RequestState extends State<Request> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                             ),
-                            child: const Text("Accept"),
+                            child: const Text("Done"),
                           ),
                         ),
                       ],
