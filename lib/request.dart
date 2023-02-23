@@ -6,10 +6,14 @@ class Request extends StatefulWidget {
   const Request({super.key});
 
   @override
-  State<Request> createState() => _RequestState();
+  _RequestState createState() => _RequestState();
 }
 
-class _RequestState extends State<Request> {
+class _RequestState extends State<Request>
+    with AutomaticKeepAliveClientMixin<Request> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +71,7 @@ class _RequestState extends State<Request> {
                         //shows time
                         const Expanded(
                           flex: 1,
-                          child: /*Text("time"), */Timers(),
+                          child: /*Text("time"), */ Timers(),
                         ),
                         //done button
                         Expanded(
@@ -137,6 +141,7 @@ class _RequestState extends State<Request> {
     );
   }
 }
+
 //Timer
 class Timers extends StatefulWidget {
   const Timers({super.key});
@@ -146,7 +151,7 @@ class Timers extends StatefulWidget {
 }
 
 class _TimersState extends State<Timers> {
-  Duration duration = const Duration(); 
+  Duration duration = const Duration();
   Timer? timer;
 
   void addTime() {
@@ -168,7 +173,8 @@ class _TimersState extends State<Timers> {
 
     startTimer();
   }
-   @override
+
+  @override
   void dispose() {
     timer?.cancel();
     super.dispose();
