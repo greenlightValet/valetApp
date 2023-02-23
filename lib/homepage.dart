@@ -36,59 +36,53 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 4,
-        child: Scaffold(
-          body: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverAppBar(
-                      pinned: true,
-                      snap: false,
-                      floating: true,
-                      expandedHeight: 133.0,
-                      title: Text(widget.title,
-                          style: const TextStyle(fontSize: 23)),
-                      bottom: const TabBar(
-                        tabs: [
-                          Tab(
-                            icon: Icon(Icons.add_circle),
-                            text: "Ticket",
-                          ),
-                          Tab(
-                            icon: Icon(Icons.find_in_page_sharp),
-                            text: "Requests",
-                          ),
-                          Tab(
-                            icon: Icon(Icons.home),
-                            text: "Home",
-                          ),
-                          Tab(
-                            icon: Icon(Icons.settings),
-                            text: "Settings",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-              body: TabBarView(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    child: const ValetForm(),
-                  ),
-                  MaterialApp(
-                    debugShowCheckedModeBanner: false,
-                    theme: ThemeData.dark(),
-                    home: const Center(child: Request()),
-                  ),
-                  const MaterialApp(
-                    home: Center(child: Text("Add Home")),
-                  ),
-                  const MaterialApp(
-                    home: Center(child: Text("Add Settings")),
-                  ),
-                ],
-              )),
-        ));
+      length: 4,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            bottom: const TabBar(
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.add_circle),
+                  text: "Ticket",
+                ),
+                Tab(
+                  icon: Icon(Icons.find_in_page_sharp),
+                  text: "Requests",
+                ),
+                Tab(
+                  icon: Icon(Icons.home),
+                  text: "Home",
+                ),
+                Tab(
+                  icon: Icon(Icons.settings),
+                  text: "Settings",
+                ),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: const ValetForm(),
+              ),
+              const Request(),
+              //  MaterialApp(
+              //   debugShowCheckedModeBanner: false,
+              //   theme: ThemeData.dark(),
+              //   title: "Request Page",
+              //   home: const Center(child: Request()),
+              // ),
+              const MaterialApp(
+                home: Center(child: Text("Add Home")),
+              ),
+              const MaterialApp(
+                home: Center(child: Text("Add Settings")),
+              ),
+            ],
+          )),
+    );
   }
 }
 

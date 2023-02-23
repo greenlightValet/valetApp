@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class Request extends StatefulWidget {
@@ -14,9 +16,9 @@ class _RequestState extends State<Request> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            //title
             const SizedBox(
               width: double.infinity,
-              //height: 30,
               child: Text(
                 "Waiting List",
                 textAlign: TextAlign.center,
@@ -27,55 +29,100 @@ class _RequestState extends State<Request> {
                 ),
               ),
             ),
+            //List
             Column(
               children: List.generate(
-                respondList.length,
+                waitingList.length,
                 (index) {
                   return Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Flex(
                       direction: Axis.horizontal,
                       children: [
+                        //name, location, etc.
                         Expanded(
                           flex: 2,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                respondList[index]["name"],
+                                waitingList[index]["name"],
                                 style: const TextStyle(fontSize: 24),
                               ),
                               Text(
-                                respondList[index]["location"] +
+                                waitingList[index]["location"] +
                                     ', ' +
-                                    '${respondList[index]["id"]}' +
+                                    '${waitingList[index]["id"]}' +
                                     ', ' +
-                                    respondList[index]["make"] +
+                                    waitingList[index]["make"] +
                                     ' ' +
-                                    '${respondList[index]["model"]}' +
+                                    '${waitingList[index]["model"]}' +
                                     ', ' +
-                                    respondList[index]["color"],
+                                    waitingList[index]["color"],
                                 style: const TextStyle(fontSize: 12),
                               ),
                             ],
                           ),
                         ),
-                        Expanded(
+                        //shows time
+                        const Expanded(
                           flex: 1,
-                          child: showTime(index),
+                          child: /*Text("time"), */Timers(),
                         ),
+                        //done button
                         Expanded(
                           flex: 1,
                           child: ElevatedButton(
                             onPressed: () {
-                              setState(() {
-                                respondList.removeAt(index);
-                              });
+                              //Done prompt
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: ListView(
+                                      shrinkWrap: true,
+                                      children: <Widget>[
+                                        const SizedBox(height: 20),
+                                        const Center(
+                                            child: Text(
+                                                'Checking Out or Returning')),
+                                        const SizedBox(height: 20),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    waitingList.removeAt(index);
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                                child:
+                                                    const Text("Checking Out")),
+                                            TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    waitingList.removeAt(index);
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text("Returning")),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                             ),
-                            child: const Text("Done"),
+                            child: const Text("Accept"),
                           ),
                         ),
                       ],
@@ -90,26 +137,70 @@ class _RequestState extends State<Request> {
     );
   }
 }
+//Timer
+class Timers extends StatefulWidget {
+  const Timers({super.key});
 
-Widget showTime(int index) {
-  return Text("${(index + 1) * 5} min",
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: getColor(index),
-      ));
+  @override
+  State<Timers> createState() => _TimersState();
 }
 
-Color getColor(int index) {
-  if (index < 2) {
+class _TimersState extends State<Timers> {
+  Duration duration = const Duration(); 
+  Timer? timer;
+
+  void addTime() {
+    const int addSecond = 1;
+    setState(() {
+      final seconds = duration.inSeconds + addSecond;
+
+      duration = Duration(seconds: seconds);
+    });
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (_) => addTime());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    startTimer();
+  }
+   @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void stopTimer() {
+    timer?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text("${duration.inMinutes} min",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: getColor(duration.inMinutes),
+        ));
+  }
+}
+
+//determine color based on time
+Color getColor(int time) {
+  if (time < 5) {
     return Colors.green;
-  } else if (index < 4) {
+  } else if (time < 10) {
     return Colors.orange;
   } else {
     return Colors.red;
   }
 }
 
-List<Map> respondList = [
+//waiting list
+List<Map> waitingList = [
   {
     "name": 'Mimi',
     "id": 123495,
