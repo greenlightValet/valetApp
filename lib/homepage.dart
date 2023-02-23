@@ -105,6 +105,8 @@ class _ValetFormState extends State<ValetForm> {
   String _model = '';
   String _license = '';
   String _randNum = '';
+  String _color = '';
+  String _parking = '';
   int _selectedTime = 0;
   bool _nameCheck = false;
   bool _numCheck = false;
@@ -183,15 +185,17 @@ class _ValetFormState extends State<ValetForm> {
 
   List<Widget> getFormWidget() {
     List<Widget> formWidget = [];
-    formWidget.add(Text(
-      'Ticket ID: $_randNum',
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontSize: 27,
-        fontWeight: FontWeight.w700,
-        height: 2,
-      ),
-    ));
+    formWidget.add(Padding(
+        padding: const EdgeInsets.only(bottom: 15),
+        child: Text(
+          'Ticket ID: $_randNum',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 27,
+            fontWeight: FontWeight.w700,
+            height: 0.1,
+          ),
+        )));
 
     formWidget.add(TextFormField(
       decoration:
@@ -300,14 +304,14 @@ class _ValetFormState extends State<ValetForm> {
     ));
 
     formWidget.add(TextFormField(
-      decoration: const InputDecoration(
-          hintText: 'Brand', labelText: "Enter the car's brand"),
+      decoration:
+          const InputDecoration(hintText: 'Brand', labelText: "Enter Brand"),
       keyboardType: TextInputType.number,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Enter the brand';
         }
-        Pattern pattern = r'^[a-zA-Z]+$';
+        Pattern pattern = r'^[a-zA-Z ]+$';
         RegExp regex = RegExp(pattern.toString());
 
         if (!regex.hasMatch(value.toString())) {
@@ -324,8 +328,8 @@ class _ValetFormState extends State<ValetForm> {
     ));
 
     formWidget.add(TextFormField(
-      decoration: const InputDecoration(
-          hintText: 'Model', labelText: "Enter the car's model"),
+      decoration:
+          const InputDecoration(hintText: 'Model', labelText: "Enter Model"),
       keyboardType: TextInputType.number,
       validator: (value) {
         if (value!.isEmpty) {
@@ -343,8 +347,7 @@ class _ValetFormState extends State<ValetForm> {
 
     formWidget.add(TextFormField(
       decoration: const InputDecoration(
-          hintText: 'License', labelText: 'Enter the license number'),
-      keyboardType: TextInputType.number,
+          hintText: 'License', labelText: 'Enter License Number'),
       validator: (value) {
         if (value!.isEmpty) {
           return 'Enter license number';
@@ -355,6 +358,56 @@ class _ValetFormState extends State<ValetForm> {
       onSaved: (value) {
         setState(() {
           _license = value.toString();
+        });
+      },
+    ));
+
+    formWidget.add(TextFormField(
+      decoration:
+          const InputDecoration(labelText: 'Enter Color', hintText: 'Color'),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Please enter color of the car';
+        }
+
+        Pattern pattern = r'^[a-zA-Z]+$';
+        RegExp regex = RegExp(pattern.toString());
+
+        if (!regex.hasMatch(value.toString())) {
+          return 'Enter a valid color';
+        } else {
+          _nameCheck = true;
+          return null;
+        }
+      },
+      onSaved: (value) {
+        setState(() {
+          _color = value.toString();
+        });
+      },
+    ));
+
+    formWidget.add(TextFormField(
+      decoration: const InputDecoration(
+          labelText: 'Enter Parking Spot', hintText: 'Parking'),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Please enter a parking spot';
+        }
+
+        Pattern pattern = r'^[a-zA-Z0-9]+$';
+        RegExp regex = RegExp(pattern.toString());
+
+        if (!regex.hasMatch(value.toString())) {
+          return 'Enter a valid parking spot';
+        } else {
+          _nameCheck = true;
+          return null;
+        }
+      },
+      onSaved: (value) {
+        setState(() {
+          _parking = value.toString();
         });
       },
     ));
