@@ -136,8 +136,3 @@ app.*.symbols
 
 # stores secrete values
 .env
-
-firebase_options.dart
-firebase_app_id_file.json
-google-services.json
-GoogleService-Info.plist
