@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
+import "firestore.dart";
 import 'dart:math';
 import 'dart:io';
 import 'request.dart';
 
-void main() {
+void main() async {
   runApp(const Homepage());
 }
 
@@ -32,6 +33,7 @@ class FormPage extends StatefulWidget {
   _FormPageState createState() => _FormPageState();
 }
 
+// top navbar (with link to each page )
 class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
@@ -96,9 +98,11 @@ class ValetForm extends StatefulWidget {
 class _ValetFormState extends State<ValetForm> {
   final _formKey = GlobalKey<FormState>();
   final _passKey = GlobalKey<FormFieldState>();
-
   late TwilioFlutter twilioFlutter;
 
+//***** VARIABLES *****
+
+// ticket
   String _name = '';
   String _number = '';
   String _brand = '';
@@ -113,7 +117,7 @@ class _ValetFormState extends State<ValetForm> {
   bool _hasBeenPressed1 = false; //for confirmation button
   bool _hasBeenPressed2 = false; //for ticket button
 
-  // For Camera
+// camera
   bool _front = false;
   bool _back = false;
   bool _left = false;
@@ -127,6 +131,47 @@ class _ValetFormState extends State<ValetForm> {
   final leftPicker = ImagePicker();
   final rightPicker = ImagePicker();
 
+// ***** FUNCTIONS *****
+
+// twilio auth keys
+  @override
+  void initState() {
+    twilioFlutter = TwilioFlutter(
+        accountSid: 'AC4142b9df47f01a20604e4ee1dc64757d',
+        authToken: 'f38debcceb6a9f48c0f4e1387cd933e0',
+        twilioNumber: '+13855264060');
+
+    super.initState();
+  }
+
+// twilio SEND sms command
+  void sendSMS(String number, String message) async {
+    twilioFlutter.sendSMS(toNumber: '+1' + number, messageBody: message);
+  }
+
+// twilio GET sms command
+  void getSMS() async {
+    var data = await twilioFlutter.getSmsList();
+    print(data);
+
+    await twilioFlutter.getSMS('***************************');
+  }
+
+// random # generator (for ticket #)
+  void getRandNum() {
+    if (_randNum == '') {
+      var rndnumber = "";
+      var rnd = new Random();
+      for (var i = 0; i < 6; i++) {
+        rndnumber = rndnumber + rnd.nextInt(9).toString();
+      }
+      _randNum = rndnumber;
+    }
+  }
+
+// ***** WIDGETS *****
+
+// dropdown menu for hours
   List<DropdownMenuItem<int>> TimeList = [];
   void loadTimeList() {
     TimeList = [];
@@ -140,38 +185,6 @@ class _ValetFormState extends State<ValetForm> {
     ));
   }
 
-  @override
-  void initState() {
-    twilioFlutter = TwilioFlutter(
-        accountSid: 'AC4142b9df47f01a20604e4ee1dc64757d',
-        authToken: 'ba92fdc0b5a6cfe9f7adfda2f65af8c1',
-        twilioNumber: '+13855264060');
-
-    super.initState();
-  }
-
-  void sendSms(String number, String message) async {
-    twilioFlutter.sendSMS(toNumber: '+1' + number, messageBody: message);
-  }
-
-  void getSms() async {
-    var data = await twilioFlutter.getSmsList();
-    print(data);
-
-    await twilioFlutter.getSMS('***************************');
-  }
-
-  void getRandNum() {
-    if (_randNum == '') {
-      var rndnumber = "";
-      var rnd = new Random();
-      for (var i = 0; i < 6; i++) {
-        rndnumber = rndnumber + rnd.nextInt(9).toString();
-      }
-      _randNum = rndnumber;
-    }
-  }
-
   Widget build(BuildContext context) {
     loadTimeList();
     getRandNum();
@@ -183,10 +196,13 @@ class _ValetFormState extends State<ValetForm> {
         ));
   }
 
+// all ticket inputs
   List<Widget> getFormWidget() {
     List<Widget> formWidget = [];
     formWidget.add(Padding(
         padding: const EdgeInsets.only(bottom: 15),
+
+        // top bar, with receipt #
         child: Text(
           'Ticket ID: $_randNum',
           textAlign: TextAlign.center,
@@ -197,6 +213,7 @@ class _ValetFormState extends State<ValetForm> {
           ),
         )));
 
+    // client name
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(labelText: 'Enter Name', hintText: 'Name'),
@@ -222,6 +239,7 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
+    // phone number VALIDATOR
     validateNumber(String? value) {
       if (value!.isEmpty) {
         return 'Please enter phone number';
@@ -236,6 +254,7 @@ class _ValetFormState extends State<ValetForm> {
       }
     }
 
+    // client phone number
     formWidget.add(TextFormField(
       decoration: const InputDecoration(
           labelText: 'Enter Phone Number', hintText: 'Number'),
@@ -248,11 +267,14 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
-    void onPressedSubmit() {
+// **** SEND CONFIRMATION (send SMS functionality + bottom popup) ****
+
+    void smsPressedSubmit() {
       if (_nameCheck == true && _numCheck == true) {
         _hasBeenPressed1 = true;
 
-        sendSms(_number, "Yo, testing sms feature with confirm button.");
+        sendSMS(_number,
+            "Thanks for using GreenValet $_name! Your ticket # is $_randNum");
 
         final snackBar = SnackBar(
           content: Container(
@@ -272,23 +294,25 @@ class _ValetFormState extends State<ValetForm> {
       }
     }
 
+    // button designs
     final ButtonStyle style1 = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 17),
       backgroundColor: _hasBeenPressed1 ? Colors.green : Colors.blue,
     );
-
     final ButtonStyle style2 = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 17),
       backgroundColor: _hasBeenPressed2 ? Colors.green : Colors.blue,
     );
 
+    // send confirmation button
     formWidget.add(Container(
         margin: const EdgeInsets.all(20.0),
         child: ElevatedButton(
-            onPressed: onPressedSubmit,
+            onPressed: smsPressedSubmit,
             style: style1,
             child: const Text('Send Confirmation'))));
 
+// **** TIME DROPDOWN ****
     formWidget.add(DropdownButtonFormField(
       decoration: InputDecoration(labelText: 'Select Time'),
       hint: const Text('Select Time'),
@@ -303,6 +327,9 @@ class _ValetFormState extends State<ValetForm> {
       menuMaxHeight: 800,
     ));
 
+// **** VEHICLE & PARKING INFO ****
+
+    // vehicle brand
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(hintText: 'Brand', labelText: "Enter Brand"),
@@ -327,6 +354,7 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
+    // vehicle model
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(hintText: 'Model', labelText: "Enter Model"),
@@ -345,6 +373,7 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
+    // vehicle license plate #
     formWidget.add(TextFormField(
       decoration: const InputDecoration(
           hintText: 'License', labelText: 'Enter License Number'),
@@ -362,6 +391,7 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
+    // vehicle color
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(labelText: 'Enter Color', hintText: 'Color'),
@@ -387,6 +417,7 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
+    // parking spot
     formWidget.add(TextFormField(
       decoration: const InputDecoration(
           labelText: 'Enter Parking Spot', hintText: 'Parking'),
@@ -412,7 +443,8 @@ class _ValetFormState extends State<ValetForm> {
       },
     ));
 
-    // Camera Implementation
+// ***** CAMERA IMPLEMENTATION *****
+
     Widget displayImage(File img, bool side) {
       if (side == true) {
         return Image.file(img, height: 200, width: 100);
@@ -421,7 +453,7 @@ class _ValetFormState extends State<ValetForm> {
       }
     }
 
-    // Front Image
+    // FRONT
     void frontCamera() async {
       var imgCamera = await frontPicker.getImage(source: ImageSource.camera);
       setState(() {
@@ -467,7 +499,7 @@ class _ValetFormState extends State<ValetForm> {
           child: _front ? displayImage(frontImg, _front) : const SizedBox()),
     );
 
-    // Back Image
+    // BACK
     void backCamera() async {
       var imgCamera = await backPicker.getImage(source: ImageSource.camera);
       setState(() {
@@ -512,7 +544,7 @@ class _ValetFormState extends State<ValetForm> {
       Container(child: _back ? displayImage(backImg, _back) : const SizedBox()),
     );
 
-    // Left Side Image
+    // LEFT
     void leftCamera() async {
       var imgCamera = await leftPicker.getImage(source: ImageSource.camera);
       setState(() {
@@ -557,7 +589,7 @@ class _ValetFormState extends State<ValetForm> {
       Container(child: _left ? displayImage(leftImg, _left) : const SizedBox()),
     );
 
-    // Right Side Image
+    // RIGHT
     void rightCamera() async {
       var imgCamera = await rightPicker.getImage(source: ImageSource.camera);
       setState(() {
@@ -603,7 +635,29 @@ class _ValetFormState extends State<ValetForm> {
           child: _right ? displayImage(rightImg, _right) : const SizedBox()),
     );
 
-    void onPressedSubmit1() {
+// ***** TICKET SUBMISSION *****
+
+    void ticketPressedSubmit() {
+      print(_brand);
+      print(_model);
+      print(_license);
+
+      final Map<String, dynamic> receipt = {
+        "brand": _brand,
+        "license": _license,
+        "model": _model,
+      };
+      // receipt["brand"] = _brand;
+      //  "name": _name,
+      //   "number": _number,
+      //   "brand": _brand,
+      //   "model": _model,
+      //   "license": _license,
+      //   "randNum": _randNum,
+      //   "color": _color,
+      //   "parking": _parking,
+
+      // submit ticket functionality + bottom popup
       if (_formKey.currentState!.validate()) {
         _formKey.currentState?.save();
         _hasBeenPressed2 = true;
@@ -615,14 +669,20 @@ class _ValetFormState extends State<ValetForm> {
                 child: Text('Ticket Created', style: TextStyle(fontSize: 20))),
           ),
         );
+        print(receipt);
+
+        addValue(receipt);
+
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
+      ;
     }
 
+    // submit ticket button
     formWidget.add(Container(
         margin: const EdgeInsets.all(20.0),
         child: ElevatedButton(
-            onPressed: onPressedSubmit1,
+            onPressed: ticketPressedSubmit,
             style: style2,
             child: const Text('Create Ticket'))));
 
