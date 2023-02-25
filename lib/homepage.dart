@@ -70,12 +70,6 @@ class _FormPageState extends State<FormPage> {
                 child: const ValetForm(),
               ),
               const Request(),
-              //  MaterialApp(
-              //   debugShowCheckedModeBanner: false,
-              //   theme: ThemeData.dark(),
-              //   title: "Request Page",
-              //   home: const Center(child: Request()),
-              // ),
               const MaterialApp(
                 home: Center(child: Text("Add Home")),
               ),
@@ -103,19 +97,19 @@ class _ValetFormState extends State<ValetForm> {
 //***** VARIABLES *****
 
 // ticket
+  String _ticketID = '';
   String _name = '';
   String _number = '';
   String _brand = '';
   String _model = '';
   String _license = '';
-  String _randNum = '';
   String _color = '';
-  String _parking = '';
-  int _selectedTime = 0;
-  bool _nameCheck = false;
-  bool _numCheck = false;
-  bool _hasBeenPressed1 = false; //for confirmation button
-  bool _hasBeenPressed2 = false; //for ticket button
+  String _parkingSpot = '';
+  int _shiftPeriod = 0;
+  bool _nameValidation = false;
+  bool _phoneNumValidation = false;
+  bool _sendConfirmationBtnPressed = false; //for confirmation button
+  bool _createTicketBtnPressed = false; //for ticket button
 
 // camera
   bool _front = false;
@@ -138,10 +132,22 @@ class _ValetFormState extends State<ValetForm> {
   void initState() {
     twilioFlutter = TwilioFlutter(
         accountSid: 'AC4142b9df47f01a20604e4ee1dc64757d',
-        authToken: 'f38debcceb6a9f48c0f4e1387cd933e0',
+        authToken: '23a6f52b34b4802dfb052949e0512d13',
         twilioNumber: '+13855264060');
 
     super.initState();
+  }
+
+// random # generator (for ticket #)
+  void getRandNum() {
+    if (_ticketID == '') {
+      var rndnumber = "";
+      var rnd = new Random();
+      for (var i = 0; i < 6; i++) {
+        rndnumber = rndnumber + rnd.nextInt(9).toString();
+      }
+      _ticketID = rndnumber;
+    }
   }
 
 // twilio SEND sms command
@@ -155,18 +161,6 @@ class _ValetFormState extends State<ValetForm> {
     print(data);
 
     await twilioFlutter.getSMS('***************************');
-  }
-
-// random # generator (for ticket #)
-  void getRandNum() {
-    if (_randNum == '') {
-      var rndnumber = "";
-      var rnd = new Random();
-      for (var i = 0; i < 6; i++) {
-        rndnumber = rndnumber + rnd.nextInt(9).toString();
-      }
-      _randNum = rndnumber;
-    }
   }
 
 // ***** WIDGETS *****
@@ -204,7 +198,7 @@ class _ValetFormState extends State<ValetForm> {
 
         // top bar, with receipt #
         child: Text(
-          'Ticket ID: $_randNum',
+          'Ticket ID: $_ticketID',
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 27,
@@ -228,14 +222,14 @@ class _ValetFormState extends State<ValetForm> {
         if (!regex.hasMatch(value.toString())) {
           return 'Enter a valid name';
         } else {
-          _nameCheck = true;
+          _nameValidation = true;
           return null;
         }
       },
       onSaved: (value) {
-        setState(() {
-          _name = value.toString();
-        });
+        _name = value.toString();
+        // _formKey.currentState?.save();
+        setState(() {});
       },
     ));
 
@@ -249,7 +243,7 @@ class _ValetFormState extends State<ValetForm> {
       if (!regex.hasMatch(value.toString())) {
         return 'Enter Valid Number';
       } else {
-        _numCheck = true;
+        _phoneNumValidation = true;
         return null;
       }
     }
@@ -270,11 +264,11 @@ class _ValetFormState extends State<ValetForm> {
 // **** SEND CONFIRMATION (send SMS functionality + bottom popup) ****
 
     void smsPressedSubmit() {
-      if (_nameCheck == true && _numCheck == true) {
-        _hasBeenPressed1 = true;
+      if (_nameValidation == true && _phoneNumValidation == true) {
+        _sendConfirmationBtnPressed = true;
 
         sendSMS(_number,
-            "Thanks for using GreenValet $_name! Your ticket # is $_randNum");
+            "Thanks for using GreenValet $_name! Your ticket # is $_ticketID");
 
         final snackBar = SnackBar(
           content: Container(
@@ -286,7 +280,7 @@ class _ValetFormState extends State<ValetForm> {
           ),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        _formKey.currentState!.validate();
+        _formKey.currentState?.validate();
         _formKey.currentState?.save();
       } else {
         _formKey.currentState!.validate();
@@ -297,11 +291,11 @@ class _ValetFormState extends State<ValetForm> {
     // button designs
     final ButtonStyle style1 = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 17),
-      backgroundColor: _hasBeenPressed1 ? Colors.green : Colors.blue,
+      backgroundColor: _sendConfirmationBtnPressed ? Colors.green : Colors.blue,
     );
     final ButtonStyle style2 = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 17),
-      backgroundColor: _hasBeenPressed2 ? Colors.green : Colors.blue,
+      backgroundColor: _createTicketBtnPressed ? Colors.green : Colors.blue,
     );
 
     // send confirmation button
@@ -317,10 +311,10 @@ class _ValetFormState extends State<ValetForm> {
       decoration: InputDecoration(labelText: 'Select Time'),
       hint: const Text('Select Time'),
       items: TimeList,
-      value: _selectedTime,
+      value: _shiftPeriod,
       onChanged: (value) {
         setState(() {
-          _selectedTime = int.parse(value.toString());
+          _shiftPeriod = int.parse(value.toString());
         });
       },
       isExpanded: true,
@@ -406,7 +400,7 @@ class _ValetFormState extends State<ValetForm> {
         if (!regex.hasMatch(value.toString())) {
           return 'Enter a valid color';
         } else {
-          _nameCheck = true;
+          _nameValidation = true;
           return null;
         }
       },
@@ -432,13 +426,13 @@ class _ValetFormState extends State<ValetForm> {
         if (!regex.hasMatch(value.toString())) {
           return 'Enter a valid parking spot';
         } else {
-          _nameCheck = true;
+          _nameValidation = true;
           return null;
         }
       },
       onSaved: (value) {
         setState(() {
-          _parking = value.toString();
+          _parkingSpot = value.toString();
         });
       },
     ));
@@ -638,29 +632,10 @@ class _ValetFormState extends State<ValetForm> {
 // ***** TICKET SUBMISSION *****
 
     void ticketPressedSubmit() {
-      print(_brand);
-      print(_model);
-      print(_license);
-
-      final Map<String, dynamic> receipt = {
-        "brand": _brand,
-        "license": _license,
-        "model": _model,
-      };
-      // receipt["brand"] = _brand;
-      //  "name": _name,
-      //   "number": _number,
-      //   "brand": _brand,
-      //   "model": _model,
-      //   "license": _license,
-      //   "randNum": _randNum,
-      //   "color": _color,
-      //   "parking": _parking,
-
       // submit ticket functionality + bottom popup
       if (_formKey.currentState!.validate()) {
         _formKey.currentState?.save();
-        _hasBeenPressed2 = true;
+        _createTicketBtnPressed = true;
         final snackBar = SnackBar(
           content: Container(
             margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -669,13 +644,23 @@ class _ValetFormState extends State<ValetForm> {
                 child: Text('Ticket Created', style: TextStyle(fontSize: 20))),
           ),
         );
-        print(receipt);
 
-        addValue(receipt);
+        final Map<String, dynamic> receipt = {
+          "ticketID": _ticketID,
+          "name": _name,
+          "phoneNum": _number,
+          "shift": _shiftPeriod,
+          "brand": _brand,
+          "model": _model,
+          "license": _license,
+          "color": _color,
+          "parkingSpot": _parkingSpot
+        };
+
+        addValue(_ticketID, receipt);
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-      ;
     }
 
     // submit ticket button
