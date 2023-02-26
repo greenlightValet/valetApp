@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
 import "firestore.dart";
@@ -99,7 +100,7 @@ class _ValetFormState extends State<ValetForm> {
 // ticket
   String _ticketID = '';
   String _name = '';
-  String _number = '';
+  String _phoneNumber = '';
   String _brand = '';
   String _model = '';
   String _license = '';
@@ -124,6 +125,7 @@ class _ValetFormState extends State<ValetForm> {
   final backPicker = ImagePicker();
   final leftPicker = ImagePicker();
   final rightPicker = ImagePicker();
+  late BuildContext original;
 
 // ***** FUNCTIONS *****
 
@@ -209,6 +211,7 @@ class _ValetFormState extends State<ValetForm> {
 
     // client name
     formWidget.add(TextFormField(
+      keyboardType: TextInputType.name,
       decoration:
           const InputDecoration(labelText: 'Enter Name', hintText: 'Name'),
       validator: (value) {
@@ -228,7 +231,6 @@ class _ValetFormState extends State<ValetForm> {
       },
       onSaved: (value) {
         _name = value.toString();
-        // _formKey.currentState?.save();
         setState(() {});
       },
     ));
@@ -256,7 +258,7 @@ class _ValetFormState extends State<ValetForm> {
       validator: validateNumber,
       onSaved: (value) {
         setState(() {
-          _number = value.toString();
+          _phoneNumber = value.toString();
         });
       },
     ));
@@ -267,7 +269,7 @@ class _ValetFormState extends State<ValetForm> {
       if (_nameValidation == true && _phoneNumValidation == true) {
         _sendConfirmationBtnPressed = true;
 
-        sendSMS(_number,
+        sendSMS(_phoneNumber,
             "Thanks for using GreenValet $_name! Your ticket # is $_ticketID");
 
         final snackBar = SnackBar(
@@ -306,7 +308,7 @@ class _ValetFormState extends State<ValetForm> {
             style: style1,
             child: const Text('Send Confirmation'))));
 
-// **** TIME DROPDOWN ****
+    // **** TIME DROPDOWN ****
     formWidget.add(DropdownButtonFormField(
       decoration: InputDecoration(labelText: 'Select Time'),
       hint: const Text('Select Time'),
@@ -327,7 +329,7 @@ class _ValetFormState extends State<ValetForm> {
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(hintText: 'Brand', labelText: "Enter Brand"),
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.text,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Enter the brand';
@@ -352,7 +354,7 @@ class _ValetFormState extends State<ValetForm> {
     formWidget.add(TextFormField(
       decoration:
           const InputDecoration(hintText: 'Model', labelText: "Enter Model"),
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.text,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Enter model';
@@ -369,6 +371,7 @@ class _ValetFormState extends State<ValetForm> {
 
     // vehicle license plate #
     formWidget.add(TextFormField(
+      keyboardType: TextInputType.text,
       decoration: const InputDecoration(
           hintText: 'License', labelText: 'Enter License Number'),
       validator: (value) {
@@ -387,6 +390,7 @@ class _ValetFormState extends State<ValetForm> {
 
     // vehicle color
     formWidget.add(TextFormField(
+      keyboardType: TextInputType.text,
       decoration:
           const InputDecoration(labelText: 'Enter Color', hintText: 'Color'),
       validator: (value) {
@@ -400,7 +404,7 @@ class _ValetFormState extends State<ValetForm> {
         if (!regex.hasMatch(value.toString())) {
           return 'Enter a valid color';
         } else {
-          _nameValidation = true;
+          // _nameValidation = true;
           return null;
         }
       },
@@ -413,6 +417,7 @@ class _ValetFormState extends State<ValetForm> {
 
     // parking spot
     formWidget.add(TextFormField(
+      keyboardType: TextInputType.text,
       decoration: const InputDecoration(
           labelText: 'Enter Parking Spot', hintText: 'Parking'),
       validator: (value) {
@@ -426,7 +431,7 @@ class _ValetFormState extends State<ValetForm> {
         if (!regex.hasMatch(value.toString())) {
           return 'Enter a valid parking spot';
         } else {
-          _nameValidation = true;
+          // _nameValidation = true;
           return null;
         }
       },
@@ -438,14 +443,6 @@ class _ValetFormState extends State<ValetForm> {
     ));
 
 // ***** CAMERA IMPLEMENTATION *****
-
-    Widget displayImage(File img, bool side) {
-      if (side == true) {
-        return Image.file(img, height: 200, width: 100);
-      } else {
-        return const Text("");
-      }
-    }
 
     // FRONT
     void frontCamera() async {
@@ -467,32 +464,6 @@ class _ValetFormState extends State<ValetForm> {
       );
     }
 
-    formWidget.add(Container(
-      margin: const EdgeInsets.all(20.0),
-      child: ElevatedButton(
-        onPressed: () {
-          frontBuffer(context);
-        },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-              if (_front == true) {
-                return Colors.green;
-              } else {
-                return Colors.blue;
-              }
-            },
-          ),
-        ),
-        child: const Text('Front'),
-      ),
-    ));
-
-    formWidget.add(
-      Container(
-          child: _front ? displayImage(frontImg, _front) : const SizedBox()),
-    );
-
     // BACK
     void backCamera() async {
       var imgCamera = await backPicker.getImage(source: ImageSource.camera);
@@ -513,31 +484,6 @@ class _ValetFormState extends State<ValetForm> {
       );
     }
 
-    formWidget.add(Container(
-      margin: const EdgeInsets.all(20.0),
-      child: ElevatedButton(
-        onPressed: () {
-          backBuffer(context);
-        },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-              if (_back == true) {
-                return Colors.green;
-              } else {
-                return Colors.blue;
-              }
-            },
-          ),
-        ),
-        child: const Text('Back'),
-      ),
-    ));
-
-    formWidget.add(
-      Container(child: _back ? displayImage(backImg, _back) : const SizedBox()),
-    );
-
     // LEFT
     void leftCamera() async {
       var imgCamera = await leftPicker.getImage(source: ImageSource.camera);
@@ -557,31 +503,6 @@ class _ValetFormState extends State<ValetForm> {
         },
       );
     }
-
-    formWidget.add(Container(
-      margin: const EdgeInsets.all(20.0),
-      child: ElevatedButton(
-        onPressed: () {
-          leftBuffer(context);
-        },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-              if (_left == true) {
-                return Colors.green;
-              } else {
-                return Colors.blue;
-              }
-            },
-          ),
-        ),
-        child: const Text('Left Side'),
-      ),
-    ));
-
-    formWidget.add(
-      Container(child: _left ? displayImage(leftImg, _left) : const SizedBox()),
-    );
 
     // RIGHT
     void rightCamera() async {
@@ -604,30 +525,283 @@ class _ValetFormState extends State<ValetForm> {
     }
 
     formWidget.add(Container(
-      margin: const EdgeInsets.all(20.0),
-      child: ElevatedButton(
-        onPressed: () {
-          rightBuffer(context);
-        },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-              if (_right == true) {
-                return Colors.green;
-              } else {
-                return Colors.blue;
-              }
-            },
-          ),
-        ),
-        child: const Text('Right Side'),
-      ),
-    ));
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(top: 20),
+        child: const Text('Damages', style: TextStyle(fontSize: 30))));
 
-    formWidget.add(
-      Container(
-          child: _right ? displayImage(rightImg, _right) : const SizedBox()),
-    );
+    formWidget.add(Row(
+      children: [
+        if (_front == false) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              onPressed: () {
+                frontBuffer(context);
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Front'),
+            ),
+          ),
+        ],
+        if (_front == true) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              onPressed: () {
+                original = context;
+                showCupertinoDialog(
+                  context: context,
+                  builder: (context) => CupertinoAlertDialog(
+                    title: const Text('Front Side'),
+                    content: Image.file(
+                      frontImg,
+                      height: 400,
+                      width: 500,
+                    ),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        child: const Text('Retake Image'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            (() {
+                              frontBuffer(original);
+                            }),
+                          );
+                        },
+                      ),
+                      CupertinoDialogAction(
+                        child: const Text('Exit'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Front - [View]'),
+            ),
+          ),
+        ],
+        if (_back == false) ...[
+          Container(
+            margin: const EdgeInsets.all(15.0),
+            width: 140,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+              ),
+              onPressed: () {
+                backBuffer(context);
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Back'),
+            ),
+          ),
+        ],
+        if (_back == true) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              onPressed: () {
+                original = context;
+                showCupertinoDialog(
+                  context: context,
+                  builder: (context) => CupertinoAlertDialog(
+                    title: const Text('Back Side'),
+                    content: Image.file(
+                      backImg,
+                      height: 400,
+                      width: 500,
+                    ),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        child: const Text('Retake Image'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            (() {
+                              backBuffer(original);
+                            }),
+                          );
+                        },
+                      ),
+                      CupertinoDialogAction(
+                        child: const Text('Exit'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Back - [View]'),
+            ),
+          ),
+        ],
+      ],
+    ));
+    formWidget.add(Row(
+      children: [
+        if (_left == false) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+              ),
+              onPressed: () {
+                leftBuffer(context);
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Left'),
+            ),
+          ),
+        ],
+        if (_left == true) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              onPressed: () {
+                original = context;
+                showCupertinoDialog(
+                  context: context,
+                  builder: (context) => CupertinoAlertDialog(
+                    title: const Text('Left Side'),
+                    content: Image.file(
+                      leftImg,
+                      height: 400,
+                      width: 500,
+                    ),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        child: const Text('Retake Image'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            (() {
+                              leftBuffer(original);
+                            }),
+                          );
+                        },
+                      ),
+                      CupertinoDialogAction(
+                        child: const Text('Exit'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Left - [View]'),
+            ),
+          ),
+        ],
+        if (_right == false) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+              ),
+              onPressed: () {
+                rightBuffer(context);
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Right'),
+            ),
+          ),
+        ],
+        if (_right == true) ...[
+          Container(
+            width: 140,
+            margin: const EdgeInsets.all(15.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              onPressed: () {
+                original = context;
+                showCupertinoDialog(
+                  context: context,
+                  builder: (context) => CupertinoAlertDialog(
+                    title: const Text('Right Side'),
+                    content: Image.file(
+                      rightImg,
+                      height: 400,
+                      width: 500,
+                    ),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        child: const Text('Retake Image'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            (() {
+                              rightBuffer(original);
+                            }),
+                          );
+                        },
+                      ),
+                      CupertinoDialogAction(
+                        child: const Text('Exit'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Right - [View]'),
+            ),
+          ),
+        ],
+      ],
+    ));
 
 // ***** TICKET SUBMISSION *****
 
@@ -648,7 +822,7 @@ class _ValetFormState extends State<ValetForm> {
         final Map<String, dynamic> receipt = {
           "ticketID": _ticketID,
           "name": _name,
-          "phoneNum": _number,
+          "phoneNum": _phoneNumber,
           "shift": _shiftPeriod,
           "brand": _brand,
           "model": _model,
